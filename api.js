@@ -3,14 +3,15 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ✅ Ye line jaroori hai (static files serve karne ke liye)
+// ✅ Static files serve karo (jo public folder me hote hain)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Default route agar koi unknown route aaye
+// ✅ Agar koi bhi URL aaye toh index.html dikhao (React/Vite ke liye jaruri)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ✅ Server start
 app.listen(port, () => {
-  console.log(`API running on port ${port}`);
+  console.log(`✅ API running on http://localhost:${port}`);
 });
