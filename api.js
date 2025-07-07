@@ -1,40 +1,39 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const StellarSdk = require('stellar-sdk');
+const { Server, Transaction } = require('stellar-sdk');
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const port = process.env.PORT || 10000;
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));  // Ye line zarur chahiye
 
 app.post('/submitTransaction', async (req, res) => {
-  console.log("🚀 Received body:", req.body);  // check the incoming data
-
   try {
     const { xdr } = req.body;
+
     if (!xdr) {
       return res.status(400).json({ success: false, error: 'Missing signed XDR' });
     }
 
-    const server = new StellarSdk.Server('https://api.mainnet.minepi.com');
-    const tx = new StellarSdk.Transaction(xdr, StellarSdk.Networks.PI_MAINNET);
+    console.log("Received XDR:", xdr);
 
-    const result = await server.submitTransaction(tx);
-    return res.json({ success: true, result });
+    const server = new Server('https://api.mainnet.minepi.com');
+    const transaction = new Transaction(xdr, 'Pi Mainnet');
 
+    const response = await server.submitTransaction(transaction);
+
+    res.json({ success: true, result: response });
   } catch (e) {
-    console.error('SubmitTransaction Error:', e);
-    const reason = e.response?.data?.extras?.result_codes || 'Unknown error';
-    return res.status(500).json({ success: false, error: e.message, reason });
+    console.error("SubmitTransaction Error:", e);
+    res.status(500).json({
+      success: false,
+      error: e.message,
+      reason: e.response?.data?.extras?.result_codes || 'Unknown error'
+    });
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`API running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`API running on port ${port}`);
 });
