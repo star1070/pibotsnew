@@ -5,9 +5,10 @@
   "scripts": {
     "start": "node api.js"
   },
-  "dependencies": {
-    "express": "^4.19.2",
-    "stellar-sdk": "^12.3.0",
-    "body-parser": "^1.20.2"
+"dependencies": {
+  "express": "^4.x",
+  "body-parser": "^1.x",
+  "stellar-sdk": "^10.x"
+
   }
 }
