@@ -1,18 +1,18 @@
-const StellarSdk = require('stellar-sdk');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const StellarSdk = require('stellar-sdk');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
+// Middleware
 app.use(bodyParser.json());
+
+// Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+// Submit Transaction API
 app.post('/submitTransaction', async (req, res) => {
   try {
     const { xdr } = req.body;
@@ -22,21 +22,22 @@ app.post('/submitTransaction', async (req, res) => {
     }
 
     const server = new StellarSdk.Server('https://api.mainnet.minepi.com');
-    const transaction = new StellarSdk.Transaction(xdr, StellarSdk.Networks['PI_MAINNET']);
-    const response = await server.submitTransaction(transaction);
+    const transaction = new StellarSdk.Transaction(
+      xdr,
+      { networkPassphrase: 'Pi Mainnet' }
+    );
 
-    return res.json({ success: true, result: response });
+    const result = await server.submitTransaction(transaction);
+    res.json({ success: true, result });
+
   } catch (e) {
     console.error('SubmitTransaction Error:', e);
     const reason = e.response?.data?.extras?.result_codes || 'Unknown error';
-    return res.status(500).json({
-      success: false,
-      error: e.message,
-      reason
-    });
+    res.status(500).json({ success: false, error: e.message, reason });
   }
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`API running on port ${port}`);
 });
