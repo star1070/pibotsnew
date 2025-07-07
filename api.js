@@ -1,13 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 const StellarSdk = require('stellar-sdk');
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 10000;
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 app.post('/submitTransaction', async (req, res) => {
   try {
@@ -17,15 +16,16 @@ app.post('/submitTransaction', async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing signed XDR" });
     }
 
-    const server = new StellarSdk.Server("https://api.mainnet.minepi.com");
-    const transaction = new StellarSdk.Transaction(xdr, StellarSdk.Networks.PI_MAINNET);
+    const server = new StellarSdk.Horizon.Server("https://api.mainnet.minepi.com");
+    const transaction = StellarSdk.TransactionBuilder.fromXDR(xdr, StellarSdk.Networks.PI_MAINNET);
     const result = await server.submitTransaction(transaction);
 
-    res.json({ success: true, result });
+    return res.json({ success: true, result });
   } catch (e) {
     console.error("SubmitTransaction Error:", e);
     const reason = e.response?.data?.extras?.result_codes || "Unknown error";
-    res.status(500).json({ success: false, error: e.message, reason });
+
+    return res.status(500).json({ success: false, error: e.message, reason });
   }
 });
 
