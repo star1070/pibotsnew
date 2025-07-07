@@ -1,16 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { Server, TransactionBuilder, Transaction, Networks } = require('stellar-sdk');
+const { Server, Transaction, Networks } = require('stellar-sdk');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Submit Transaction API
 app.post('/submitTransaction', async (req, res) => {
   try {
     const { xdr } = req.body;
@@ -20,11 +18,10 @@ app.post('/submitTransaction', async (req, res) => {
     }
 
     const server = new Server('https://api.mainnet.minepi.com');
-    const transaction = new Transaction(xdr, Networks['PI_MAINNET']);  // THIS IS KEY LINE!
+    const transaction = new Transaction(xdr, Networks['PI_MAINNET']);
 
     const result = await server.submitTransaction(transaction);
     res.json({ success: true, result });
-
   } catch (e) {
     console.error('SubmitTransaction Error:', e);
     const reason = e.response?.data?.extras?.result_codes || 'Unknown error';
