@@ -6,13 +6,16 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 10000;
 
+// Serve static files (HTML, CSS, JS)
+app.use(express.static(__dirname));
 app.use(bodyParser.json());
-app.use(express.static(__dirname));  // Serve JS, CSS etc.
 
+// Serve index.html on "/"
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Submit transaction API
 app.post('/submitTransaction', async (req, res) => {
   try {
     const { xdr } = req.body;
@@ -29,7 +32,6 @@ app.post('/submitTransaction', async (req, res) => {
   } catch (e) {
     console.error("SubmitTransaction Error:", e);
     const reason = e.response?.data?.extras?.result_codes || "Unknown error";
-
     return res.status(500).json({ success: false, error: e.message, reason });
   }
 });
