@@ -18,6 +18,8 @@ app.post('/submitTransaction', async (req, res) => {
     }
 
     const server = new Server('https://api.mainnet.minepi.com');
+
+    // ✅ YAHI LAGANA HAI
     const transaction = new Transaction(xdr, Networks['PI_MAINNET']);
 
     const result = await server.submitTransaction(transaction);
