@@ -1,12 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const StellarSdk = require('stellar-sdk');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname));  // Serve JS, CSS etc.
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/submitTransaction', async (req, res) => {
   try {
