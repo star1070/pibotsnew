@@ -9,5 +9,6 @@
   "dependencies": {
     "express": "^4.18.2",
     "stellar-sdk": "^13.3.0"
+    npm install stellar-sdk
   }
 }
