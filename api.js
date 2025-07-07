@@ -1,41 +1,47 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const StellarSdk = require('stellar-sdk');
 const path = require('path');
+const bodyParser = require('body-parser');
+const { Server, Transaction } = require('stellar-sdk');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(__dirname));
+// Parse JSON requests
 app.use(bodyParser.json());
 
-// Serve index.html on "/"
+// Serve static files from "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html on root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Submit transaction API
+// Submit Transaction Route
 app.post('/submitTransaction', async (req, res) => {
   try {
     const { xdr } = req.body;
-
     if (!xdr) {
-      return res.status(400).json({ success: false, error: "Missing signed XDR" });
+      return res.status(400).json({ success: false, error: 'Missing signed XDR' });
     }
 
-    const server = new StellarSdk.Horizon.Server("https://api.mainnet.minepi.com");
-    const transaction = StellarSdk.TransactionBuilder.fromXDR(xdr, StellarSdk.Networks.PI_MAINNET);
-    const result = await server.submitTransaction(transaction);
+    const server = new Server('https://api.mainnet.minepi.com');
+    const transaction = new Transaction(xdr, 'Pi Mainnet');
+    const response = await server.submitTransaction(transaction);
 
-    return res.json({ success: true, result });
+    return res.json({ success: true, result: response });
   } catch (e) {
-    console.error("SubmitTransaction Error:", e);
-    const reason = e.response?.data?.extras?.result_codes || "Unknown error";
-    return res.status(500).json({ success: false, error: e.message, reason });
+    console.error('SubmitTransaction Error:', e);
+    const reason = e.response?.data?.extras?.result_codes || 'Unknown error';
+    return res.status(500).json({
+      success: false,
+      error: e.message,
+      reason
+    });
   }
 });
 
+// Start Server
 app.listen(port, () => {
   console.log(`API running on port ${port}`);
 });
