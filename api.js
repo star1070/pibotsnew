@@ -1,15 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const StellarSdk = require('stellar-sdk');
+const { Server, TransactionBuilder, Transaction, Networks } = require('stellar-sdk');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
 // Middleware
 app.use(bodyParser.json());
-
-// Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Submit Transaction API
@@ -21,11 +19,8 @@ app.post('/submitTransaction', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing signed XDR' });
     }
 
-    const server = new StellarSdk.Server('https://api.mainnet.minepi.com');
-    const transaction = new StellarSdk.Transaction(
-      xdr,
-      { networkPassphrase: 'Pi Mainnet' }
-    );
+    const server = new Server('https://api.mainnet.minepi.com');
+    const transaction = new Transaction(xdr, Networks['PI_MAINNET']);  // THIS IS KEY LINE!
 
     const result = await server.submitTransaction(transaction);
     res.json({ success: true, result });
@@ -37,7 +32,6 @@ app.post('/submitTransaction', async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`API running on port ${port}`);
 });
