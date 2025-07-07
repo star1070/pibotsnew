@@ -1,15 +1,13 @@
 const express = require("express");
-const { Server, Transaction } = require("stellar-sdk");
 const bodyParser = require("body-parser");
+const { Server, Transaction } = require("stellar-sdk");  // ✅ Correct Import
 
 const app = express();
-app.use(bodyParser.json());
-
 const port = process.env.PORT || 10000;
 
-app.use(express.static("public"));
+app.use(bodyParser.json());
+app.use(express.static("public"));  // public folder serve
 
-// ✅ Submit Transaction Route
 app.post("/submitTransaction", async (req, res) => {
   try {
     const { xdr } = req.body;
