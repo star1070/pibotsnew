@@ -17,7 +17,7 @@ app.post('/submitTransaction', async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing signed XDR" });
     }
 
-    const server = new StellarSdk.Horizon.Server("https://api.mainnet.minepi.com");
+    const server = new StellarSdk.Server("https://api.mainnet.minepi.com");
     const transaction = new StellarSdk.Transaction(xdr, StellarSdk.Networks.PI_MAINNET);
     const result = await server.submitTransaction(transaction);
 
