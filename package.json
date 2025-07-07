@@ -1,7 +1,7 @@
 {
   "name": "pibotsnew",
   "version": "1.0.0",
-  "description": "",
+  "description": "Pi Bots New Project",
   "main": "api.js",
   "scripts": {
     "start": "node api.js"
