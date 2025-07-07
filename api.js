@@ -1,17 +1,19 @@
 const express = require('express');
 const path = require('path');
+const submitTransactionHandler = require('./functions/submit-transaction');
+
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 10000;
 
-// ✅ Static files serve karo (jo public folder me hote hain)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-// ✅ Agar koi bhi URL aaye toh index.html dikhao (React/Vite ke liye jaruri)
+app.post('/submit-transaction', submitTransactionHandler);
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ✅ Server start
 app.listen(port, () => {
-  console.log(`✅ API running on http://localhost:${port}`);
+  console.log(`API running on port ${port}`);
 });
