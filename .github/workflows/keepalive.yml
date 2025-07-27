@@ -1,0 +1,9 @@
+name: Keep Codespace Alive
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Keeping codespace active"
